@@ -34,6 +34,42 @@
       // .data() 要素のdata属性を取得します。
       // .width() 要素の幅を取得します。
       // .length 要素の個数を取得します。
+      var itemLength = $('.slider-list li').length;//スライドの枚数を取得
+      var itemWidth = $('.slider-list li').eq(0).width();//スライド1枚分の横幅を取得
+      var itemPosition = 0;//現在地のカウント
+
+      // スライドの枚数分dataを取得
+      for (var i = 0; i < itemLength; i++) {
+        $('.slider-list li').eq(i).data('position',itemWidth * (i+1));
+      }
+      // ボタンクリック時に発火
+      $('.slider-ctrl-btn').on('click',function() {
+        // 戻るボタンをクリックされた場合
+        if ($(this).hasClass('is-prev')) {
+          // 現在の位置
+          if(itemPosition != 0) {
+            // 1枚目じゃなかったら現在地のカウントから1を引く
+            itemPosition = itemPosition - 1;
+          } else {
+            // 1枚目だったら現在地のカウントを最大値に
+            itemPosition = itemLength - 1;
+          }
+        // 進むボタンをクリックされた場合
+        }　else if($(this).hasClass('is-next')) {
+          // 現在の位置
+          if(itemPosition < itemLength - 1) {
+            // 最後のスライドじゃなかったら現在地のカウントから1を足す
+            itemPosition = itemPosition + 1;
+          } else {
+            // 最後のスライドだったら最初の位置に設定する
+            itemPosition = 0;
+          }
+        }
+        //dataに設定した位置を取得
+        var itemPositionNum = $('.slider-list li').eq(itemPosition).data('position');
+        //横幅分を引いてleftの値に設定する
+        $('.slider-list').animate({'left':'-'+(itemPositionNum-itemWidth)});
+      })
     </script>
   </body>
 </html>

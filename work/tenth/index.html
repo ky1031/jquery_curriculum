@@ -68,6 +68,35 @@
       //
       //
       //
+
+      $.ajax({
+        url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+        type: 'GET',
+        datatype: 'json',
+        data: {
+          // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+          applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
+          booksGenreId: '001'
+        },
+      }).done(function(data) {
+        // この中にデータ取得後の動きを記述していきます。
+        var name = data.Items[0].Item.title;//タイトルが取れる
+        var author = data.Items[0].Item.author;//タイトルが取れる
+        var publisherName = data.Items[0].Item.publisherName;//タイトルが取れる
+        var tmp = "<li class='lists__item'>" +
+                    "<div class='lists__item__inner'>" +
+                      "<a href='' class='lists__item__link' target='_blank'>" +
+                        "<img src='' class='lists__item__img' alt=''>" +
+                        "<p class='lists__item__detail'>作品名："+name+"</p>" +
+                        "<p class='lists__item__detail'>作者　："+author+"</p>" +
+                        "<p class='lists__item__detail'>出版社："+publisherName+"</p>" +
+                      "</a>" +
+                    "</div>" +
+                  "</li>"
+        
+        console.log(data);
+        $('.lists').append(tmp)
+      });
     </script>
   </body>
 </html>
