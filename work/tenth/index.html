@@ -92,7 +92,7 @@
                         "</a>" +
                       "</div>" +
                     "</li>"
-          $('.message').empty();//.messageにテキストがあれば空にする
+          $('.message').remove();//.messageを消す
           $('.lists').prepend(tmp);//リストテンプレートprepend
         });
       }
@@ -107,11 +107,11 @@
       //検索結果の判定
       function search() {
         searchVal = $('.search__text__input').val(); //検索ボックスの値を取得
-        if(searchVal == lastSearchVal) { //前回の検索文言と同じ値だった場合
+        if(searchVal === lastSearchVal) { //前回の検索文言と同じ値だった場合
           pageCount = pageCount + 1; //ページカウントを1つ増やす
         } else { //前回の検索文言と違う値だった場合
           pageCount = 1; //ページカウントを1に戻す
-          $('.lists').empty();; //リストの中身を空にする
+          $('.lists').empty(); //リストの中身を空にする
         }
         lastSearchVal = searchVal; //最後に検索されたワードを格納
       }
@@ -144,7 +144,7 @@
       }
 
       $('.search__btn').on('click',function() { //サーチボタンが押された時
-        search() //search関数を実行
+        search(); //search関数を実行
         $.ajax({
           url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
           type: 'GET',
@@ -166,7 +166,7 @@
           }
         }).fail(function(data) {
           //エラーが返ってきた時に処理
-          errorJudg(data) //errorJudg関数を実行
+          errorJudg(data); //errorJudg関数を実行
         })
       });
     </script>
