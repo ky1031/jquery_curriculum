@@ -70,7 +70,7 @@
       //
 
 
-      var lastSearchVal = '';//検索ボックスの値を代入する箱
+      var lastSearchVal = '';//最後の検索ボックスの値を代入する箱
       var pageCount = 1;//ページのカウント
 
       //検索結果のリストを生成する処理
@@ -106,7 +106,7 @@
 
       //検索結果の判定
       function search() {
-        var searchVal = $('.search__text__input').val(); //検索ボックスの値を取得
+        searchVal = $('.search__text__input').val(); //検索ボックスの値を取得
         if(searchVal == lastSearchVal) { //前回の検索文言と同じ値だった場合
           pageCount = pageCount + 1; //ページカウントを1つ増やす
         } else { //前回の検索文言と違う値だった場合
@@ -117,33 +117,34 @@
       }
 
       //エラーの判定
-      function errorJudg() {
+      function errorJudg(data) {
         var errorCode = data.status; //エラーコードを取得
         switch (errorCode) {
-        case 400:
-        alert("未入力です");
-        break;
-
-        case 404:
-        alert("検索結果が見つかりませんでした");
-        break;
-
-        case 429:
-        alert("リクエストエラー");
-        break;
-
-        case 500:
-        alert("システムエラーです");
-        break;
-
-        case 503:
-        alert("メンテナンス中です");
-        break;
+          case 400: {
+            alert("未入力です");
+            break;
+          }
+          case 404: {
+            alert("検索結果が見つかりませんでした");
+            break;
+          }
+          case 429: {
+            alert("リクエストエラー");
+            break;
+          }
+          case 500: {
+            alert("システムエラーです");
+            break;
+          }
+          case 503: {
+            alert("メンテナンス中です");
+            break;
+          }
         }
       }
 
       $('.search__btn').on('click',function() { //サーチボタンが押された時
-        search(); //search関数の実行
+        search() //search関数を実行
         $.ajax({
           url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
           type: 'GET',
@@ -165,7 +166,7 @@
           }
         }).fail(function(data) {
           //エラーが返ってきた時に処理
-          errorJudg() //errorJudg関数を実行
+          errorJudg(data) //errorJudg関数を実行
         })
       });
     </script>
