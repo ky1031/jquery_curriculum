@@ -69,33 +69,104 @@
       //
       //
 
-      $.ajax({
-        url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-        type: 'GET',
-        datatype: 'json',
-        data: {
-          // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-          applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
-          booksGenreId: '001'
-        },
-      }).done(function(data) {
-        // この中にデータ取得後の動きを記述していきます。
-        var name = data.Items[0].Item.title;//タイトルが取れる
-        var author = data.Items[0].Item.author;//タイトルが取れる
-        var publisherName = data.Items[0].Item.publisherName;//タイトルが取れる
-        var tmp = "<li class='lists__item'>" +
-                    "<div class='lists__item__inner'>" +
-                      "<a href='' class='lists__item__link' target='_blank'>" +
-                        "<img src='' class='lists__item__img' alt=''>" +
-                        "<p class='lists__item__detail'>作品名："+name+"</p>" +
-                        "<p class='lists__item__detail'>作者　："+author+"</p>" +
-                        "<p class='lists__item__detail'>出版社："+publisherName+"</p>" +
-                      "</a>" +
-                    "</div>" +
-                  "</li>"
-        
-        console.log(data);
-        $('.lists').append(tmp)
+
+      var lastSearchVal = '';//検索ボックスの値を代入する箱
+      var pageCount = 1;//ページのカウント
+
+      //検索結果のリストを生成する処理
+      function listTemplate(data) {
+        $.each(data.Items, function rakutenApi(i,val) {
+          var name = val.Item.title;//作品タイトルが取れる
+          var author = val.Item.author;//作者名が取れる
+          var publisherName = val.Item.publisherName;//出版社が取れる
+          var thumbnail = val.Item.largeImageUrl;//サムネイル画像
+          var url = val.Item.itemUrl;//リンク
+          //リストテンプレート
+          var tmp = "<li class='lists__item'>" +
+                      "<div class='lists__item__inner'>" +
+                        "<a href='"+url+"' class='lists__item__link' target='_blank'>" +
+                          "<img src='"+thumbnail+"' class='lists__item__img' alt='"+name+"'>" +
+                          "<p class='lists__item__detail'>作品名："+name+"</p>" +
+                          "<p class='lists__item__detail'>作者　："+author+"</p>" +
+                          "<p class='lists__item__detail'>出版社："+publisherName+"</p>" +
+                        "</a>" +
+                      "</div>" +
+                    "</li>"
+          $('.message').empty();//.messageにテキストがあれば空にする
+          $('.lists').prepend(tmp);//リストテンプレートprepend
+        });
+      }
+
+      //検索結果が一件もなかった時の処理
+      function errorTxt() {
+        if($('.container .message').text() === "") { //.messageが空だったら処理する（文言が増えないように）
+          $('.search').after('<div class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</div>');
+        }
+      }
+
+      //検索結果の判定
+      function search() {
+        var searchVal = $('.search__text__input').val(); //検索ボックスの値を取得
+        if(searchVal == lastSearchVal) { //前回の検索文言と同じ値だった場合
+          pageCount = pageCount + 1; //ページカウントを1つ増やす
+        } else { //前回の検索文言と違う値だった場合
+          pageCount = 1; //ページカウントを1に戻す
+          $('.lists').empty();; //リストの中身を空にする
+        }
+        lastSearchVal = searchVal; //最後に検索されたワードを格納
+      }
+
+      //エラーの判定
+      function errorJudg() {
+        var errorCode = data.status; //エラーコードを取得
+        switch (errorCode) {
+        case 400:
+        alert("未入力です");
+        break;
+
+        case 404:
+        alert("検索結果が見つかりませんでした");
+        break;
+
+        case 429:
+        alert("リクエストエラー");
+        break;
+
+        case 500:
+        alert("システムエラーです");
+        break;
+
+        case 503:
+        alert("メンテナンス中です");
+        break;
+        }
+      }
+
+      $('.search__btn').on('click',function() { //サーチボタンが押された時
+        search(); //search関数の実行
+        $.ajax({
+          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+          type: 'GET',
+          datatype: 'json',
+          data: {
+            // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+            applicationId: '1019399324990976605', // (今回はこのIDを使用してください)
+            booksGenreId: '001',
+            hits: '20', //表示件数
+            page: pageCount, //ページカウント
+            keyword: searchVal //検索ワード
+          },
+        }).done(function(data) {
+          // この中にデータ取得後の動きを記述していきます。
+          if(data.count > 0) { //検索結果が一件でもあれば
+            listTemplate(data); //listTemplate関数を実行
+          } else { //検索結果が一件もなかったら
+            errorTxt(); //errorTxt関数を実行
+          }
+        }).fail(function(data) {
+          //エラーが返ってきた時に処理
+          errorJudg() //errorJudg関数を実行
+        })
       });
     </script>
   </body>

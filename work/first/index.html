@@ -81,7 +81,10 @@ $("#q3").on("click",function(){
 });
 // 第4問  id='q4'の要素をクリックしたらこの要素の前後とこの要素内の前後にテキストを挿入せよ。
 $("#q4").on("click",function(){
-  $(this).before('前に追加').after('後ろに追加').append('後ろに追加').prepend('前に追加');
+  $(this).before('前に追加')
+        .after('後ろに追加')
+        .append('後ろに追加')
+        .prepend('前に追加');
 });
 // 第5問  id='q5'の要素をクリックしたらこの要素にlargeというクラスを付与せよ。
 $("#q5").on("click",function(){
@@ -96,8 +99,8 @@ $("#q6").on("click",function(){
 });
 // 第7問  id='q7'の子要素をクリックしたら、その要素のインデックス（何番目か）をconsole.log()とalert()を用いて表示させよ。
 $("#q7 li").on("click",function(){
-  console.log($("#q7 li").index(this));
-  alert($("#q7 li").index(this));
+  console.log($(this).index());
+  alert($(this).index());
 });
 // 第8問  id='q8'の要素をhoverしたらlargeというクラスを付与し、hoverが外れたら、クラスを削除せよ。
 $('#q8').hover(function() {
@@ -107,17 +110,12 @@ $('#q8').hover(function() {
 });
 // 第9問  id='q9'の要素をクリックしたらこの要素に設定してあるdata属性をconsoleに表示せよ。
 $("#q9").on("click",function(){
-  console.log($(this).attr('data-text'));
+  console.log($(this).data('text'));
 });
 // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
-$("#q10 li").on("click",function(){
-  var num = $("#q10 li").index(this);
-  var target = $("#q11 li");
-  for (var i = 0; i < target.length; i++) {
-    if( num == $("#q11 li").eq(i)) {
-      $("#q11 li").eq(i).addClass('large');
-    }
-  }
+$("#q10").find('li').on("click",function(){
+  var num = $(this).index();
+  $("#q11").find('li').eq(num).addClass('large');
 });
 </script>
 </body>

@@ -100,13 +100,13 @@
 
       $('.select').change(function(){
         var selectVal = $('.select').val();
-        if(selectVal == 'all') {
+        if(selectVal === 'all') {
           $('.list li').show();
         } else {
-          $('.list li').each(function(i){
-            $(this).hide();
-            if($(this).attr('data-category-type') == selectVal) {
-              $(this).show();
+          $('.list li').each(function(i,val){
+            $(val).hide();
+            if($(val).data('categoryType') === selectVal) {
+              $(val).show();
             }
           });
         }
