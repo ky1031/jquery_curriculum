@@ -75,6 +75,7 @@
 
       //検索結果のリストを生成する処理
       function listTemplate(data) {
+        var tmp = ''//テンプレートを格納する箱
         $.each(data.Items, function rakutenApi(i,val) {
           var name = val.Item.title;//作品タイトルが取れる
           var author = val.Item.author;//作者名が取れる
@@ -82,19 +83,20 @@
           var thumbnail = val.Item.largeImageUrl;//サムネイル画像
           var url = val.Item.itemUrl;//リンク
           //リストテンプレート
-          var tmp = "<li class='lists__item'>" +
-                      "<div class='lists__item__inner'>" +
-                        "<a href='"+url+"' class='lists__item__link' target='_blank'>" +
-                          "<img src='"+thumbnail+"' class='lists__item__img' alt='"+name+"'>" +
-                          "<p class='lists__item__detail'>作品名："+name+"</p>" +
-                          "<p class='lists__item__detail'>作者　："+author+"</p>" +
-                          "<p class='lists__item__detail'>出版社："+publisherName+"</p>" +
-                        "</a>" +
-                      "</div>" +
-                    "</li>"
+          tmp += "<li class='lists__item'>" +
+                    "<div class='lists__item__inner'>" +
+                      "<a href='"+url+"' class='lists__item__link' target='_blank'>" +
+                        "<img src='"+thumbnail+"' class='lists__item__img' alt='"+name+"'>" +
+                        "<p class='lists__item__detail'>作品名："+name+"</p>" +
+                        "<p class='lists__item__detail'>作者　："+author+"</p>" +
+                        "<p class='lists__item__detail'>出版社："+publisherName+"</p>" +
+                      "</a>" +
+                    "</div>" +
+                  "</li>"
           $('.message').remove();//.messageを消す
-          $('.lists').prepend(tmp);//リストテンプレートprepend
+          console.log(data.Items.length);
         });
+        $('.lists').prepend(tmp);//リストテンプレート
       }
 
       //検索結果が一件もなかった時の処理
@@ -119,32 +121,17 @@
       //エラーの判定
       function errorJudg(data) {
         var errorCode = data.status; //エラーコードを取得
-        switch (errorCode) {
-          case 400: {
-            alert("未入力です");
-            break;
-          }
-          case 404: {
-            alert("検索結果が見つかりませんでした");
-            break;
-          }
-          case 429: {
-            alert("リクエストエラー");
-            break;
-          }
-          case 500: {
-            alert("システムエラーです");
-            break;
-          }
-          case 503: {
-            alert("メンテナンス中です");
-            break;
-          }
+        if(data.responseJSON.error_description !== '') {
+          console.log(data.responseJSON.error_description);
+        } else {
+          console.log("ネットワークエラー");
         }
       }
 
       $('.search__btn').on('click',function() { //サーチボタンが押された時
         search(); //search関数を実行
+        console.log(searchVal);
+        
         $.ajax({
           url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
           type: 'GET',
@@ -164,8 +151,11 @@
           } else { //検索結果が一件もなかったら
             errorTxt(); //errorTxt関数を実行
           }
+          console.log(data);
         }).fail(function(data) {
           //エラーが返ってきた時に処理
+          console.log(data);
+          
           errorJudg(data); //errorJudg関数を実行
         })
       });
